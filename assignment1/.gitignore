@@ -9,3 +9,6 @@ playwright-report/
 .env.*
 !.env.example
 # NOTE: sessions/ (Claude Code session archive) is intentionally NOT ignored.
+__pycache__/
+.pytest_cache/
+*.pyc
