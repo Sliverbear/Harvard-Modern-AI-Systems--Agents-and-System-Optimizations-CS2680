@@ -1,0 +1,25 @@
+{
+  "name": "E live streaming (events in DOM before the result event)",
+  "pass": true,
+  "checks": [
+    {
+      "label": "a tool call was in the DOM while the run status was still \"running\"",
+      "ok": true,
+      "detail": "first tool at 1901 ms, 1 tool row(s), run still running: true"
+    },
+    {
+      "label": "run finished later than the first tool row appeared",
+      "ok": true,
+      "detail": "finished at 4328 ms"
+    },
+    {
+      "label": "more tool rows appeared after the first (incremental updates)",
+      "ok": true,
+      "detail": "1 → 3"
+    }
+  ],
+  "firstToolMs": 1901,
+  "doneMs": 4328,
+  "toolsWhileRunning": 1,
+  "finalTools": 3
+}

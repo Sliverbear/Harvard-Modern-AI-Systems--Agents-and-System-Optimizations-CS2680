@@ -1,0 +1,10 @@
+
+Running 5 tests using 1 worker
+
+  ✓  1 tests/e2e/app.spec.ts:22:1 › replayed subagent run: REPLAY label, nested tree, collapsible group, outline click-to-scroll (1.3s)
+  ✓  2 tests/e2e/app.spec.ts:46:1 › edge cases: folding, error result, malformed + unknown rows, missing result => failed, pending => no result (1.0s)
+  ✓  3 tests/e2e/app.spec.ts:67:1 › multi-run replay: earlier run folds, resumed label, metrics; results persist after reload (1.5s)
+  ✓  4 tests/e2e/app.spec.ts:82:1 › submit a prompt (test-double CLI), Ctrl+Enter, follow-up resumes with cwd locked; invalid dir shows error (1.7s)
+  ✓  5 tests/e2e/app.spec.ts:105:1 › narrow window: outline is a drawer, no horizontal scroll (1.5s)
+
+  5 passed (13.4s)

@@ -1,0 +1,77 @@
+{
+  "name": "S stop (cancel a live run)",
+  "pass": true,
+  "checks": [
+    {
+      "label": "run ends as cancelled",
+      "ok": true,
+      "detail": "cancelled"
+    },
+    {
+      "label": "process terminated by a signal or exit",
+      "ok": true,
+      "detail": "signal=null exit=143"
+    },
+    {
+      "label": "no result event recorded after cancel (run did not complete)",
+      "ok": true,
+      "detail": "1 lines before stop"
+    }
+  ],
+  "runId": "run_mveq28w4_950bc0",
+  "stopMs": 1283,
+  "meta": {
+    "id": "run_mveq28w4_950bc0",
+    "sessionId": "s_mveq28w4_139421",
+    "index": 1,
+    "mode": "live",
+    "prompt": "Read every file in this directory one by one with the Read tool, then write a detailed summary of each.",
+    "cwd": "<SCRATCH>/inventory",
+    "resumeClaudeSessionId": null,
+    "claudeSessionId": "e75f7065-ea9a-4058-ba52-62e8c54f9170",
+    "args": [
+      "-p",
+      "Read every file in this directory one by one with the Read tool, then write a detailed summary of each.",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--model",
+      "haiku",
+      "--allowedTools",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(pytest:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Task",
+      "Agent"
+    ],
+    "allowedTools": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(pytest:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Task",
+      "Agent"
+    ],
+    "dangerouslySkipPermissions": false,
+    "status": "cancelled",
+    "startedAt": "2026-10-19T03:56:03.844Z",
+    "endedAt": "2026-10-19T03:56:05.129Z",
+    "exitCode": 143,
+    "signal": null,
+    "error": "Cancelled by user (Stop button).",
+    "stderrTail": null,
+    "resultSubtype": null,
+    "eventCount": 1
+  }
+}

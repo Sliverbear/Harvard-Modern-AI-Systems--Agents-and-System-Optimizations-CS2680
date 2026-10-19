@@ -9,6 +9,8 @@ import type { RunMeta, ServerMessage } from '../../shared/types';
 
 const ROOT = path.resolve(__dirname, '../..');
 const FAKE = path.join(ROOT, 'tests/fake-claude/fake-claude.mjs');
+const sessionIdOf = (rel: string): string =>
+  JSON.parse(fs.readFileSync(path.join(ROOT, 'fixtures', rel), 'utf8').split('\n').find((l) => l.includes('"init"'))!).session_id;
 let tmp: string;
 
 beforeAll(() => {
@@ -110,7 +112,7 @@ describe('run lifecycle with a test-double CLI', () => {
     const original = fs.readFileSync(process.env.FAKE_FIXTURE, 'utf8').split('\n').filter(Boolean);
     const saved = fs.readFileSync(path.join(m.store.runDir(run.id), 'events.jsonl'), 'utf8').split('\n').filter(Boolean);
     expect(saved).toEqual(original);
-    expect(end.claudeSessionId).toBe('501db2b2-3a5b-4a6e-8a2b-a55e5e19d709');
+    expect(end.claudeSessionId).toBe(sessionIdOf('real/multistep.jsonl'));
     const argv = JSON.parse(fs.readFileSync(process.env.FAKE_ARGV_OUT!, 'utf8'));
     expect(argv.cwd).toBe(fs.realpathSync(tmp));
     expect(argv.hasApiKey).toBe(false);
@@ -130,11 +132,12 @@ describe('run lifecycle with a test-double CLI', () => {
     const other = fs.mkdtempSync(path.join(tmp, 'other-'));
     expect(() => m.startRun({ sessionId: first.session.id, cwd: other, prompt: 'x' })).toThrow(HttpError);
     const second = m.startRun({ sessionId: first.session.id, cwd: tmp, prompt: 'now update the README' });
-    expect(second.run.resumeClaudeSessionId).toBe('501db2b2-3a5b-4a6e-8a2b-a55e5e19d709');
+    const sid = sessionIdOf('real/resumed-session/run-1.jsonl');
+    expect(second.run.resumeClaudeSessionId).toBe(sid);
     expect(second.run.index).toBe(2);
     await waitForEnd(m, first.session.id, second.run.id);
     const argv = JSON.parse(fs.readFileSync(process.env.FAKE_ARGV_OUT!, 'utf8')).argv;
-    expect(argv.slice(0, 3)).toEqual(['-p', '--resume', '501db2b2-3a5b-4a6e-8a2b-a55e5e19d709']);
+    expect(argv.slice(0, 3)).toEqual(['-p', '--resume', sid]);
   });
 
   it('exit without a result event => failed with exit code and stderr', async () => {
@@ -203,6 +206,12 @@ describe('run lifecycle with a test-double CLI', () => {
     expect(end.status).toBe('finished');
     expect(seen.length).toBe(fs.readFileSync(path.join(ROOT, 'fixtures/real/subagent.jsonl'), 'utf8').split('\n').filter(Boolean).length);
     expect(() => m.startRun({ sessionId: s.id, cwd: tmp, prompt: 'x' })).toThrow(/Replay sessions/);
+  });
+
+  it('fixture listing ignores *.timing.jsonl sidecars and counts multi-run sessions', () => {
+    const list = mgr().listFixtures();
+    expect(list.some((f) => f.name.includes('.timing.'))).toBe(false);
+    expect(list.find((f) => f.name === 'real/resumed-session')?.runs).toBe(2);
   });
 
   it('replay of a synthetic file with no result event ends as failed (no infinite spinner)', async () => {

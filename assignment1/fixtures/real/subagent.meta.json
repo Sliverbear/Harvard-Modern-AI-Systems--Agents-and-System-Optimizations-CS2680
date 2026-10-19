@@ -1,1 +1,44 @@
-{"prompt":"Use a subagent (the Task tool) to survey this directory and summarize its structure in 3 bullets. Do not do the survey yourself.","cwd":"<SCRATCH>/inventory","exitCode":0,"allowedTools":["Read","Edit","Write","Glob","Grep","Bash(pytest:*)","Bash(python:*)","Bash(ls:*)","Task"]}
+{
+  "prompt": "Use a subagent (the Agent/Task tool) to survey this directory and report its structure in 3 short bullets. Do not survey it yourself; wait for the subagent result.",
+  "cwd": "<SCRATCH>/inventory",
+  "exitCode": 0,
+  "signal": null,
+  "resumeClaudeSessionId": null,
+  "allowedTools": [
+    "Read",
+    "Edit",
+    "Write",
+    "Glob",
+    "Grep",
+    "Bash(pytest:*)",
+    "Bash(python:*)",
+    "Bash(python3:*)",
+    "Bash(ls:*)",
+    "Task",
+    "Agent"
+  ],
+  "args": [
+    "-p",
+    "Use a subagent (the Agent/Task tool) to survey this directory and report its structure in 3 short bullets. Do not survey it yourself; wait for the subagent result.",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--model",
+    "haiku",
+    "--allowedTools",
+    "Read",
+    "Edit",
+    "Write",
+    "Glob",
+    "Grep",
+    "Bash(pytest:*)",
+    "Bash(python:*)",
+    "Bash(python3:*)",
+    "Bash(ls:*)",
+    "Task",
+    "Agent"
+  ],
+  "status": "finished",
+  "error": null,
+  "recordedWith": "Mads-Lens live run"
+}

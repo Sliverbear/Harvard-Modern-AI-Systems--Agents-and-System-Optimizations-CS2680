@@ -1,0 +1,34 @@
+{
+  "name": "C subagent",
+  "pass": true,
+  "checks": [
+    {
+      "label": "run finished",
+      "ok": true,
+      "detail": "finished"
+    },
+    {
+      "label": "raw stream has events with non-null parent_tool_use_id",
+      "ok": true,
+      "detail": "5 events"
+    },
+    {
+      "label": "those events reference a tool_use in the same stream",
+      "ok": true,
+      "detail": "Agent(toolu_01Q2GZrfEY9Vu5R6zqHZ4TuX)"
+    },
+    {
+      "label": "subagent made its own tool calls",
+      "ok": true,
+      "detail": "2 nested calls"
+    }
+  ],
+  "runId": "run_mveq1sjy_94d962",
+  "subagentTool": [
+    "Agent"
+  ],
+  "nestedTools": [
+    "Bash",
+    "Bash"
+  ]
+}

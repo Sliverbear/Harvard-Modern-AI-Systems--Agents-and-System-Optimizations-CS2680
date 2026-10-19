@@ -1,0 +1,89 @@
+{
+  "name": "D failures (invalid directory + denied tool)",
+  "pass": true,
+  "checks": [
+    {
+      "label": "invalid dir run ends failed (no hang)",
+      "ok": true,
+      "detail": "failed"
+    },
+    {
+      "label": "error message names the bad path",
+      "ok": true,
+      "detail": "Could not start Claude Code: Working directory does not exist: /tmp/mads-lens-no-such-dir-1792382154009"
+    },
+    {
+      "label": "no claude events for the invalid dir",
+      "ok": true
+    },
+    {
+      "label": "denied tool comes back as tool_result is_error=true",
+      "ok": true,
+      "detail": "touch in '/tmp/mads_lens_denied_probe.txt' needs approval. The path is outside the working directories for this session ('~/repo/"
+    },
+    {
+      "label": "file was not created",
+      "ok": true
+    },
+    {
+      "label": "run itself still completes (denial is not a crash)",
+      "ok": true,
+      "detail": "finished"
+    }
+  ],
+  "invalidRun": {
+    "id": "run_mveq21az_b7ab8a",
+    "sessionId": "s_mveq21az_d074b8",
+    "index": 1,
+    "mode": "live",
+    "prompt": "hello",
+    "cwd": "/tmp/mads-lens-no-such-dir-1792382154009",
+    "resumeClaudeSessionId": null,
+    "claudeSessionId": null,
+    "args": [
+      "-p",
+      "hello",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--model",
+      "haiku",
+      "--allowedTools",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(pytest:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Task",
+      "Agent"
+    ],
+    "allowedTools": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(pytest:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Task",
+      "Agent"
+    ],
+    "dangerouslySkipPermissions": false,
+    "status": "failed",
+    "startedAt": "2026-10-19T03:55:54.011Z",
+    "endedAt": "2026-10-19T03:55:54.012Z",
+    "exitCode": null,
+    "signal": null,
+    "error": "Could not start Claude Code: Working directory does not exist: /tmp/mads-lens-no-such-dir-1792382154009",
+    "stderrTail": null,
+    "resultSubtype": null,
+    "eventCount": 0
+  },
+  "deniedRunId": "run_mveq21b6_a75179"
+}

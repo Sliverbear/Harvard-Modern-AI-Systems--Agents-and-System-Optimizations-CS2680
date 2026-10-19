@@ -1,0 +1,16 @@
+
+ RUN  v2.1.8 <ASSIGNMENT1>
+
+ ✓ tests/unit/process.test.ts (17 tests) 2251ms
+   ✓ run lifecycle with a test-double CLI > follow-up uses --resume with the stored session id; cwd is locked per session; duplicate submit rejected 516ms
+   ✓ run lifecycle with a test-double CLI > Stop: SIGTERM then SIGKILL after the timeout => cancelled 610ms
+   ✓ run lifecycle with a test-double CLI > replay streams a saved file through the same path and labels it as replay 337ms
+   ✓ run lifecycle with a test-double CLI > replay of a synthetic file with no result event ends as failed (no infinite spinner) 334ms
+ ✓ tests/unit/trajectory.test.ts (13 tests) 19ms
+ ✓ tests/unit/parsing.test.ts (12 tests) 6ms
+
+ Test Files  3 passed (3)
+      Tests  42 passed (42)
+   Start at  20:55:01
+   Duration  3.42s (transform 198ms, setup 0ms, collect 310ms, tests 2.28s, environment 1ms, prepare 247ms)
+

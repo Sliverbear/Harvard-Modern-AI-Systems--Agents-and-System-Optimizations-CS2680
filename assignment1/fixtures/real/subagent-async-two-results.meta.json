@@ -1,0 +1,1 @@
+{"prompt":"Use a subagent (the Task tool) to survey this directory and summarize its structure in 3 bullets. Do not do the survey yourself.","cwd":"<SCRATCH>/inventory","exitCode":0,"recordedWith":"claude 2.1.303 --model haiku, recorded directly with the CLI during exploration (async subagent; the process emitted two result events)"}

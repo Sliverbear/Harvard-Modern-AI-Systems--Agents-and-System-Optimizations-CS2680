@@ -133,14 +133,20 @@ describe('subagent tree', () => {
     expect(tools.every((t) => t.status === 'success' || t.status === 'error')).toBe(true);
   });
 
-  it('real async subagent recording nests the subagent events and tracks its task status', () => {
-    const run = runFromFile('real/subagent.jsonl');
-    const agent = [...run.tools.values()].find((t) => t.name === 'Agent')!;
-    expect(isSubagentNode(agent)).toBe(true);
+  it('real subagent recordings nest the subagent events and track its task status', () => {
+    for (const f of ['real/subagent.jsonl', 'real/subagent-async-two-results.jsonl']) {
+      const run = runFromFile(f);
+      const agent = [...run.tools.values()].find((t) => isSubagentNode(t))!;
+      expect(agent, f).toBeTruthy();
+      expect(['Agent', 'Task']).toContain(agent.name);
+      expect(countTree(agent.children).tools).toBeGreaterThanOrEqual(1);
+      expect(agent.children.every((c) => c.kind !== 'tool' || c.parentToolUseId === agent.id)).toBe(true);
+    }
+    const asyncRun = runFromFile('real/subagent-async-two-results.jsonl');
+    const agent = [...asyncRun.tools.values()].find((t) => t.name === 'Agent')!;
     expect(agent.subagentType).toBe('Explore');
     expect(agent.task?.status).toBe('completed');
-    expect(countTree(agent.children).tools).toBeGreaterThanOrEqual(3);
-    expect(run.results).toHaveLength(2);
+    expect(asyncRun.results).toHaveLength(2);
   });
 });
 

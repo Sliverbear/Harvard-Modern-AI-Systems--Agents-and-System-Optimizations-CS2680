@@ -1,0 +1,33 @@
+{
+  "name": "B resume (follow-up depends on A)",
+  "pass": true,
+  "checks": [
+    {
+      "label": "run finished",
+      "ok": true,
+      "detail": "finished"
+    },
+    {
+      "label": "command used --resume <A session id>",
+      "ok": true,
+      "detail": "-p --resume 02206a9f-3689-4f13-a355-abd67322fffb"
+    },
+    {
+      "label": "same session_id in init and result",
+      "ok": true,
+      "detail": "02206a9f-3689-4f13-a355-abd67322fffb / 02206a9f-3689-4f13-a355-abd67322fffb"
+    },
+    {
+      "label": "README changed",
+      "ok": true
+    },
+    {
+      "label": "README mentions the fixed function (context carried over, not given in the prompt)",
+      "ok": true,
+      "detail": "## Bug fix: `Inventory.low_stock` | `low_stock` in `inventory/core.py` used a strict `<` comparison, so items whose quantity was exactly equal to the threshold were left out, even though the docstring says \"at or below.\" I changed the comparison to `<=`, so items at the threshold are now included, a"
+    }
+  ],
+  "runId": "run_mveq1od8_a99593",
+  "readme": "# inventory (demo target)\n\nA tiny Python inventory library used as the scratch target for Mads-Lens demos.\n\nRun the tests with `pytest`.\n\n## Bug fix: `Inventory.low_stock`\n\n`low_stock` in `inventory/core.py` used a strict `<` comparison, so items whose quantity was exactly equal to the threshold were left out, even though the docstring says \"at or below.\" I changed the comparison to `<=`, so items at the threshold are now included, and `tests/test_core.py::test_low_stock_includes_threshold` covers this case.\n",
+  "finalText": "I added a \"Bug fix: `Inventory.low_stock`\" section to `README.md` in the inventory project. It explains that `low_stock` in `inventory/core.py` used `<`, which dropped items exactly at the threshold, and that the fix changed it to `<=`. I didn't rerun pytest because this was a docs-only change."
+}

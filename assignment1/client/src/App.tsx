@@ -106,7 +106,12 @@ function Shell({ sessionId, selectSession }: { sessionId: string | null; selectS
         requestAnimationFrame(() => {
           const el = document.querySelector<HTMLElement>(selector);
           if (!el) return;
-          el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          // Scroll only the transcript pane (scrollIntoView would also scroll the page shell).
+          const sc = scroller.current;
+          if (sc) {
+            const top = el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop - sc.clientHeight / 3;
+            sc.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+          }
           el.classList.remove('flash');
           void el.offsetWidth;
           el.classList.add('flash');
@@ -127,12 +132,12 @@ function Shell({ sessionId, selectSession }: { sessionId: string | null; selectS
     <div className="flex h-full flex-col">
       {/* Header */}
       <header className="z-20 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-slate-200 bg-white px-4 py-2.5 dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center gap-2">
+        <div className="mr-auto flex items-center gap-2 lg:mr-0">
           <svg viewBox="0 0 32 32" className="h-6 w-6 text-teal-600" aria-hidden="true"><circle cx="14" cy="14" r="9" fill="none" stroke="currentColor" strokeWidth="4" /><path d="M21 21l7 7" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></svg>
           <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">Mads-Lens</h1>
         </div>
         {isReplay && <ReplayBadge />}
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2 text-xs text-slate-500">
+        <div className="order-last flex w-full min-w-0 flex-wrap items-center gap-2 text-xs text-slate-500 lg:order-none lg:w-auto lg:flex-1">
           {session ? (
             <>
               <span className="hidden sm:inline">session</span>

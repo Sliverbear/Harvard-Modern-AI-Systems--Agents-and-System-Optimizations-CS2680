@@ -32,6 +32,12 @@ const server = app.listen(cfg.port, cfg.host, () => {
   if (cfg.model) console.log(`[mads] model: ${cfg.model}`);
 });
 
+server.on('error', (e: NodeJS.ErrnoException) => {
+  console.error(e.code === 'EADDRINUSE' ? `[mads] port ${cfg.port} is already in use — is Mads-Lens already running? Set MADS_PORT to use another port.` : `[mads] server error: ${e.message}`);
+  mgr.shutdown();
+  process.exit(1);
+});
+
 let closing = false;
 function shutdown(sig: string) {
   if (closing) return;

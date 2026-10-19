@@ -34,6 +34,8 @@ export class HttpError extends Error {
 }
 
 const STDERR_TAIL = 4000;
+/** Event files of a fixture (timing sidecars `*.timing.jsonl` are not runs). */
+const isEventFile = (f: string) => f.endsWith('.jsonl') && !f.endsWith('.timing.jsonl');
 const newId = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${crypto.randomBytes(3).toString('hex')}`;
 
 export class RunManager {
@@ -301,9 +303,9 @@ export class RunManager {
       if (!fs.existsSync(dir)) continue;
       for (const f of fs.readdirSync(dir).sort()) {
         const p = path.join(dir, f);
-        if (f.endsWith('.jsonl')) out.push({ name: `${group}/${f}`, runs: 1, synthetic: group === 'synthetic' });
+        if (isEventFile(f)) out.push({ name: `${group}/${f}`, runs: 1, synthetic: group === 'synthetic' });
         else if (fs.statSync(p).isDirectory()) {
-          const n = fs.readdirSync(p).filter((x) => x.endsWith('.jsonl')).length;
+          const n = fs.readdirSync(p).filter(isEventFile).length;
           if (n) out.push({ name: `${group}/${f}`, runs: n, synthetic: group === 'synthetic' });
         }
       }
@@ -316,7 +318,7 @@ export class RunManager {
     const p = path.join(this.cfg.fixturesDir, name);
     if (!fs.existsSync(p)) throw new HttpError(404, `Fixture not found: ${name}`);
     if (fs.statSync(p).isDirectory()) {
-      return fs.readdirSync(p).filter((f) => f.endsWith('.jsonl')).sort().map((f) => path.join(p, f));
+      return fs.readdirSync(p).filter(isEventFile).sort().map((f) => path.join(p, f));
     }
     return [p];
   }
