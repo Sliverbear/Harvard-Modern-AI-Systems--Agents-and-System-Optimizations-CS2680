@@ -1,0 +1,1 @@
+{"prompt":"Read every file in this project one at a time, then summarize.","cwd":"<SCRATCH>/inventory","exitCode":1,"args":["--max-turns","1"],"allowedTools":["Read","Glob"]}

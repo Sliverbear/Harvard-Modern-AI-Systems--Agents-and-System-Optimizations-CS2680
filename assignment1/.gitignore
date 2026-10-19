@@ -1,0 +1,11 @@
+node_modules/
+client/dist/
+data/
+scratch/work/
+test-results/
+playwright-report/
+*.log.tmp
+.env
+.env.*
+!.env.example
+# NOTE: sessions/ (Claude Code session archive) is intentionally NOT ignored.

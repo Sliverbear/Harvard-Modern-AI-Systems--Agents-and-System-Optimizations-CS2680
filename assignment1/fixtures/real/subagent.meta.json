@@ -1,0 +1,1 @@
+{"prompt":"Use a subagent (the Task tool) to survey this directory and summarize its structure in 3 bullets. Do not do the survey yourself.","cwd":"<SCRATCH>/inventory","exitCode":0,"allowedTools":["Read","Edit","Write","Glob","Grep","Bash(pytest:*)","Bash(python:*)","Bash(ls:*)","Task"]}

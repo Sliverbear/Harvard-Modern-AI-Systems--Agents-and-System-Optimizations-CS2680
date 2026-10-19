@@ -1,0 +1,7 @@
+{
+ "prompt": "SYNTHETIC: malformed line, unknown event type, multi-block message, long output, error result, pending tool, NO result event",
+ "cwd": "<SCRATCH>/inventory",
+ "exitCode": 1,
+ "stderr": "synthetic: process exited without result\n",
+ "synthetic": true
+}

@@ -1,0 +1,6 @@
+{
+ "prompt": "SYNTHETIC: two parallel subagents, one with a nested subagent",
+ "cwd": "<SCRATCH>/inventory",
+ "exitCode": 0,
+ "synthetic": true
+}

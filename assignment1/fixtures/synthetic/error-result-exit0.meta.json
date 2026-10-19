@@ -1,0 +1,6 @@
+{
+ "prompt": "SYNTHETIC: non-success result although exit code is 0",
+ "cwd": "<SCRATCH>/inventory",
+ "exitCode": 0,
+ "synthetic": true
+}

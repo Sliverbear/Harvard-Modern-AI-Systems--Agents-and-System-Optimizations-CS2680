@@ -1,0 +1,42 @@
+{
+  "name": "mads-lens",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mads-Lens: a local observability frontend for the Claude Code headless CLI (CS2680 Assignment 1)",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "tsx watch server/index.ts",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "tsx server/index.ts",
+    "scratch:reset": "node scripts/reset-scratch.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:live": "node scripts/live-tests.mjs"
+  },
+  "dependencies": {
+    "express": "4.21.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-markdown": "9.0.1",
+    "remark-gfm": "4.0.0",
+    "tsx": "4.19.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.0",
+    "@types/express": "4.17.21",
+    "@types/node": "22.10.2",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "10.4.20",
+    "concurrently": "9.1.0",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.7.2",
+    "vite": "5.4.11",
+    "vitest": "2.1.8"
+  }
+}
