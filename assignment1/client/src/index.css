@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
+html, body, #root { height: 100%; }
+body { @apply bg-slate-50 text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200; }
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-slate-900; }
+  .btn-primary { @apply border-teal-700 bg-teal-700 text-white hover:bg-teal-800 dark:border-teal-500 dark:bg-teal-600 dark:hover:bg-teal-500; }
+  .btn-danger { @apply border-rose-700 bg-rose-700 text-white hover:bg-rose-800; }
+  .btn-ghost { @apply border-slate-300 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800; }
+  .input { @apply w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:disabled:bg-slate-800; }
+  .card { @apply rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900; }
+  .chip { @apply inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium; }
+  .mono { @apply font-mono text-[12.5px] leading-relaxed; }
+}
+
+/* Markdown (assistant text) */
+.md { @apply text-[14.5px] leading-relaxed; overflow-wrap: anywhere; }
+.md > * + * { @apply mt-2; }
+.md h1 { @apply text-lg font-semibold; } .md h2 { @apply text-base font-semibold; } .md h3 { @apply font-semibold; }
+.md ul { @apply list-disc pl-5; } .md ol { @apply list-decimal pl-5; }
+.md li + li { @apply mt-0.5; }
+.md a { @apply text-teal-700 underline dark:text-teal-400; }
+.md code { @apply rounded bg-slate-100 px-1 py-px font-mono text-[12.5px] dark:bg-slate-800; }
+.md pre { @apply overflow-x-auto rounded-md bg-slate-100 p-3 dark:bg-slate-800/70; }
+.md pre code { @apply bg-transparent p-0; }
+.md blockquote { @apply border-l-4 border-slate-300 pl-3 text-slate-600 dark:border-slate-600 dark:text-slate-400; }
+.md table { @apply block overflow-x-auto border-collapse text-sm; }
+.md th, .md td { @apply border border-slate-300 px-2 py-1 dark:border-slate-700; }
+.md th { @apply bg-slate-100 font-semibold dark:bg-slate-800; }
+
+.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { 0%, 30% { box-shadow: 0 0 0 3px rgb(20 184 166 / 0.85); } 100% { box-shadow: 0 0 0 3px rgb(20 184 166 / 0); } }
+@media (prefers-reduced-motion: reduce) { .animate-spin { animation: none; } .flash { animation: none; outline: 3px solid rgb(20 184 166); } }
