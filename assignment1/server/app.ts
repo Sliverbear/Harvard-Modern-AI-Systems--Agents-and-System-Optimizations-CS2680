@@ -47,6 +47,7 @@ export function createApp(cfg: Config, mgr: RunManager) {
   app.post('/api/validate-cwd', wrap((req) => validateCwd(req.body?.cwd)));
 
   app.get('/api/sessions', wrap(() => mgr.listSessions()));
+  app.post('/api/sessions/delete', wrap((req) => mgr.deleteSessions(req.body?.ids)));
   app.get('/api/sessions/:id', wrap((req) => ({ session: mgr.getSession(req.params.id), runs: mgr.getRuns(req.params.id) })));
 
   app.get('/api/sessions/:id/stream', (req, res, next) => {

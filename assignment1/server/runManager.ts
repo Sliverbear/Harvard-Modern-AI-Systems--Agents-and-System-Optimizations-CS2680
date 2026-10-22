@@ -4,7 +4,7 @@ import type { ChildProcess } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import type { RunMeta, ServerMessage, SessionMeta, StreamLine } from '../shared/types.ts';
+import type { DeleteSessionsResult, RunMeta, ServerMessage, SessionMeta, StreamLine } from '../shared/types.ts';
 import { decideOutcome } from '../shared/outcome.ts';
 import type { Config } from './config.ts';
 import { buildArgs, spawnClaude, terminate, validateCwd } from './claudeProcess.ts';
@@ -76,6 +76,34 @@ export class RunManager {
     const s = this.sessions.get(id);
     if (!s) throw new HttpError(404, `Unknown session ${id}`);
     return s;
+  }
+
+  /**
+   * Bulk-delete sessions and all their runs' data (meta, events, timing, stderr).
+   * A session with a run currently in progress is skipped, not force-stopped; cancel it first.
+   * Unknown ids are reported back as skipped too, so a stale client list fails loudly rather than silently.
+   */
+  deleteSessions(ids: unknown): DeleteSessionsResult {
+    const list = Array.isArray(ids) ? [...new Set(ids.filter((x): x is string => typeof x === 'string' && x.length > 0))] : [];
+    const deleted: string[] = [];
+    const skipped: { id: string; reason: string }[] = [];
+    for (const id of list) {
+      const s = this.sessions.get(id);
+      if (!s) {
+        skipped.push({ id, reason: 'Unknown session.' });
+        continue;
+      }
+      if (this.sessionHasActiveRun(s)) {
+        skipped.push({ id, reason: 'A run is in progress in this session. Stop it first.' });
+        continue;
+      }
+      for (const runId of s.runIds) this.store.deleteRun(runId);
+      this.store.deleteSession(id);
+      this.sessions.delete(id);
+      this.listeners.delete(id);
+      deleted.push(id);
+    }
+    return { deleted, skipped };
   }
 
   getRuns(sessionId: string): RunMeta[] {

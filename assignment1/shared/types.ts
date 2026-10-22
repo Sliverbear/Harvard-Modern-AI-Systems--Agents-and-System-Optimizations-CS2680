@@ -56,6 +56,11 @@ export type ServerMessage =
   | { kind: 'stderr'; runId: string; text: string }
   | { kind: 'session'; session: SessionMeta };
 
+export interface DeleteSessionsResult {
+  deleted: string[];
+  skipped: { id: string; reason: string }[];
+}
+
 export interface ServerConfigView {
   claudeBin: string;
   model: string | null;

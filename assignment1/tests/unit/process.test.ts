@@ -222,3 +222,48 @@ describe('run lifecycle with a test-double CLI', () => {
     expect(end.error).toContain('without a result event');
   });
 });
+
+describe('bulk-delete sessions', () => {
+  it('deletes a finished session: it disappears from the list and its run files are gone from disk', async () => {
+    process.env.FAKE_SCENARIO = 'fixture';
+    process.env.FAKE_FIXTURE = path.join(ROOT, 'fixtures/real/multistep.jsonl');
+    const m = mgr();
+    const { session, run } = m.startRun({ cwd: tmp, prompt: 'go' });
+    await waitForEnd(m, session.id, run.id);
+    const runDir = m.store.runDir(run.id);
+    expect(fs.existsSync(runDir)).toBe(true);
+
+    const res = m.deleteSessions([session.id]);
+    expect(res.deleted).toEqual([session.id]);
+    expect(res.skipped).toEqual([]);
+    expect(m.listSessions().some((s) => s.id === session.id)).toBe(false);
+    expect(() => m.getSession(session.id)).toThrow(HttpError);
+    expect(fs.existsSync(runDir)).toBe(false);
+  });
+
+  it('skips a session with a run in progress, and still deletes the rest in the same call', async () => {
+    process.env.FAKE_SCENARIO = 'hang';
+    const m = mgr();
+    const running = m.startRun({ cwd: tmp, prompt: 'x' });
+
+    process.env.FAKE_SCENARIO = 'fixture';
+    process.env.FAKE_FIXTURE = path.join(ROOT, 'fixtures/real/multistep.jsonl');
+    const finished = m.startRun({ cwd: tmp, prompt: 'y' });
+    await waitForEnd(m, finished.session.id, finished.run.id);
+
+    const res = m.deleteSessions([running.session.id, finished.session.id]);
+    expect(res.deleted).toEqual([finished.session.id]);
+    expect(res.skipped).toEqual([{ id: running.session.id, reason: expect.stringContaining('in progress') }]);
+    expect(m.getSession(running.session.id)).toBeTruthy(); // untouched
+
+    m.cancel(running.run.id);
+    await waitForEnd(m, running.session.id, running.run.id);
+  });
+
+  it('reports unknown ids as skipped instead of throwing', () => {
+    const m = mgr();
+    const res = m.deleteSessions(['s_does_not_exist', 123, null]);
+    expect(res.deleted).toEqual([]);
+    expect(res.skipped).toEqual([{ id: 's_does_not_exist', reason: expect.stringContaining('Unknown') }]);
+  });
+});

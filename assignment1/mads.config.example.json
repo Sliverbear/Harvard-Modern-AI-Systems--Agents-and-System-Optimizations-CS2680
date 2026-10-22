@@ -1,0 +1,7 @@
+{
+  "_comment": "Copy this file to mads.config.json and edit the path for your own machine. Do NOT commit mads.config.json — it contains a machine-specific path and is already in .gitignore.",
+
+  "_claudeBin_why": "On some Windows installs, Mads-Lens's automatic claude.exe detection (server/claudeProcess.ts) fails with 'spawn claude ENOENT' even though `claude --version` works fine in PowerShell. This happens when the @anthropic-ai/claude-code npm package ships the binary as bin\\claude.exe instead of the older cli.js layout the detection logic expects. If you hit this, find the real path with `Get-Content (where.exe claude.cmd)` (it prints the exe path it calls), then set claudeBin below to that exact path.",
+
+  "claudeBin": "C:\\Users\\<you>\\AppData\\Roaming\\npm\\node_modules\\@anthropic-ai\\claude-code\\bin\\claude.exe"
+}

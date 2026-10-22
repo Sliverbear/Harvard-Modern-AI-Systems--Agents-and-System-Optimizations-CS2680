@@ -63,6 +63,19 @@ The commands are the same in PowerShell. Mads-Lens never uses a shell to start `
   npm start
   ```
 
+> ⚠️ **Known pitfall: newer `@anthropic-ai/claude-code` releases on Windows ship the binary as
+> `bin\claude.exe` instead of the older `cli.js` layout the detection above expects.** If `claude --version`
+> works fine in PowerShell but Mads-Lens still fails with `spawn claude ENOENT`, the auto-detection guessed
+> wrong. Find the real path with:
+> ```powershell
+> Get-Content (where.exe claude.cmd)
+> ```
+> (it prints the exact `.exe` path the shim calls), then either set `$env:MADS_CLAUDE_BIN` to that path for
+> the current shell, or — to make it stick across new terminals/reboots — copy
+> [`mads.config.example.json`](mads.config.example.json) to `mads.config.json` in this folder and put the
+> path in `claudeBin`. **Never commit `mads.config.json`** — it holds a machine-specific path and is already
+> git-ignored; only `mads.config.example.json` is tracked.
+
 ## 4. Using it
 
 1. **Live run.** Set the working directory (the default is `scratch/work/inventory`), type a prompt and press **Run** or `Ctrl/⌘+Enter`. Events stream in as they arrive. **Stop** terminates the process: SIGTERM first, then SIGKILL after 3 s.

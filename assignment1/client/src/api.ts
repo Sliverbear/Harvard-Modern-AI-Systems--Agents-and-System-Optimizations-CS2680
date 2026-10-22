@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import type { ServerConfigView, ServerMessage, SessionMeta } from '../../shared/types';
+import type { DeleteSessionsResult, ServerConfigView, ServerMessage, SessionMeta } from '../../shared/types';
 import { SessionModel } from '../../shared/sessionModel';
 
 async function req<T>(method: string, url: string, body?: unknown): Promise<T> {
@@ -16,6 +16,7 @@ async function req<T>(method: string, url: string, body?: unknown): Promise<T> {
 export const api = {
   config: () => req<ServerConfigView>('GET', '/api/config'),
   sessions: () => req<SessionMeta[]>('GET', '/api/sessions'),
+  deleteSessions: (ids: string[]) => req<DeleteSessionsResult>('POST', '/api/sessions/delete', { ids }),
   validateCwd: (cwd: string) => req<{ ok: boolean; path?: string; error?: string }>('POST', '/api/validate-cwd', { cwd }),
   startRun: (b: { sessionId: string | null; cwd: string; prompt: string }) => req<{ session: SessionMeta }>('POST', '/api/runs', b),
   cancel: (runId: string) => req('POST', `/api/runs/${runId}/cancel`),

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import type { ServerConfigView, SessionMeta } from '../../shared/types';
 import { ancestorsOf } from '../../shared/trajectory';
 import { api, useSessionModel } from './api';
+import { HistoryManager } from './components/HistoryManager';
 import { Outline } from './components/Outline';
 import { RunCard } from './components/RunCard';
 import { ExpandProvider, IconDown, IconList, IconLock, IconMoon, IconSun, IconX, ReplayBadge, RunStatusBadge, useExpand } from './components/ui';
@@ -165,6 +166,14 @@ function Shell({ sessionId, selectSession }: { sessionId: string | null; selectS
             </option>
           ))}
         </select>
+        <HistoryManager
+          sessions={sessions}
+          currentSessionId={sessionId}
+          onDeleted={(deletedIds) => {
+            refreshSessions();
+            if (sessionId && deletedIds.includes(sessionId)) selectSession(null);
+          }}
+        />
         <button type="button" className="btn btn-ghost" onClick={() => selectSession(null)} data-testid="new-session">New session</button>
         <button type="button" className="btn btn-ghost lg:hidden" onClick={() => setOutlineOpen(true)} aria-label="Show outline"><IconList /> <span className="hidden sm:inline">Outline</span></button>
         <button type="button" className="btn btn-ghost px-2" onClick={() => setDark(!dark)} aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}>

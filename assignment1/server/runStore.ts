@@ -84,6 +84,24 @@ export class RunStore {
       .filter((s): s is SessionMeta => s !== null)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
+
+  /** Remove a session's own record (its runs' data is deleted separately via deleteRun). */
+  deleteSession(id: string): void {
+    try {
+      fs.unlinkSync(path.join(this.dataDir, 'sessions', `${safeId(id)}.json`));
+    } catch {
+      /* already gone */
+    }
+  }
+
+  /** Remove a run's whole directory (meta.json, events.jsonl, timing.jsonl, stderr.log). */
+  deleteRun(runId: string): void {
+    try {
+      fs.rmSync(this.runDir(runId), { recursive: true, force: true });
+    } catch {
+      /* already gone */
+    }
+  }
 }
 
 /**

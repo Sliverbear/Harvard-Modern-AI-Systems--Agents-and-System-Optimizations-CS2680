@@ -8,6 +8,8 @@ playwright-report/
 .env
 .env.*
 !.env.example
+mads.config.json
+!mads.config.example.json
 # NOTE: sessions/ (Claude Code session archive) is intentionally NOT ignored.
 __pycache__/
 .pytest_cache/
