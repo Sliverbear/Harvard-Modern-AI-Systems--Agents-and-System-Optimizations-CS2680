@@ -1,16 +1,12 @@
 # Assignment 1 — Writeup
 
-## 1. What I built
-
 I built a basic monitoring system for Claude Code. Right now, it only works when I run Claude directly, not through a plugin. It displays metrics such as **Cost, Duration, Wall Clock Time, Turns, Tokens In/Out, Cache Reads/Writes, and Session Information**.
 
 The goal is to track how much each AI agent run costs and better understand what the agent is doing during execution.
 
 ![Mads-Lens screenshot](demo/screenshot.png)
 
-## 2. What I learned
-
-Scenario:
+In the Scenario.
 
 Time: Submitted via the Mads-Lens web interface on your Windows machine. This marks the first successful execution following the fix for the `ENOENT` error and the completion of the login process.
 
@@ -26,9 +22,9 @@ Those were successful cases, but along the way, I noticed that Claude sometimes 
 
 It also seems to get anchored to previous results and treat earlier assumptions as facts, so it takes longer to find the actual bug.
 
-Even after I give it a prompt, Claude sometimes misses features that I thought were part of the requirements, such as the ability to view and manage previous run history.3. One thing I would change about Claude Code
+Even after I give it a prompt, Claude sometimes misses features that I thought were part of the requirements, such as the ability to view and manage previous run history.
 
-I would improve how Claude handles repeated errors.
+One thing I would change about Claude Code. I would improve how Claude handles repeated errors.
 
 For example, when Mads-Lens failed with `spawn claude ENOENT` on Windows, the same error happened six times. Claude kept suggesting fixes like reinstalling Claude or restarting PowerShell, but it didn't inspect `claudeProcess.ts` until after the fifth failure.
 
