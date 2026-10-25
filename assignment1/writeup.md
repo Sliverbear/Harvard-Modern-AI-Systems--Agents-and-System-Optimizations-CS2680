@@ -1,72 +1,35 @@
 # Assignment 1 — Writeup
 
-<!--
-TEMPLATE ONLY. The prose must be written by you; the course penalizes AI-generated writeups.
-The HTML comments below only point to session moments / log files you may want to look at.
-Delete the comments before submitting.
--->
-
 ## 1. What I built
 
-_[One paragraph in your own words.]_
+I built a basic monitoring system for Claude Code. Right now, it only works when I run Claude directly, not through a plugin. It displays metrics such as **Cost, Duration, Wall Clock Time, Turns, Tokens In/Out, Cache Reads/Writes, and Session Information**.
+
+The goal is to track how much each AI agent run costs and better understand what the agent is doing during execution.
 
 ![Mads-Lens screenshot](demo/screenshot.png)
 
-**Improvements beyond the required features:**
-
-- _[…]_
-
-<!--
-Pointers:
-- README.md §8 lists what was added beyond the seven features (replay speeds, background-subagent handling,
-  history/reload, "show all events", wall clock, dark/phone layout, local-only hardening).
-- logs/live/E-mid-run.png and E-finished.png are real screenshots taken during live test E.
--->
-
 ## 2. What I learned
 
-### 2.1 How the agent works
+Scenario:
 
-_[Observation tied to a specific moment in a session: where it spent time, what it read, how it approached the task.]_
+Time: Submitted via the Mads-Lens web interface on your Windows machine. This marks the first successful execution following the fix for the `ENOENT` error and the completion of the login process.
 
-<!--
-Possible moments to look at:
-- logs/live/A.json → "tools": the order of calls in the multi-step fix (did it run the tests first? read
-  files with Read or with cat/grep in Bash? how many pytest runs?).
-- fixtures/real/multistep.jsonl vs fixtures/real/resumed-session/run-1.jsonl: two recordings of the same
-  task; compare the approaches.
-- Result usage in logs/live/*.json: cache_read vs. input tokens (most input is cached context).
--->
+Prompt: "What is Assignment 1 about?" — this is quite vague, with no specific instructions on what steps to take.
 
-### 2.2 A pitfall
+Working Directory: The course root directory, `Harvard...CS2680` (not the default "scratch" project).
 
-_[What went wrong, how you noticed, what to warn classmates about.]_
+Model: `claude-sonnet-5`. Since `MADS_MODEL` was not explicitly set, the default model was used. There are 40 tools available, and the permission mode is set to "default."
 
-<!--
-Candidates observed during development (verify in the logs before using any):
-- PLAN.md "Nested-execution finding": a nested `claude -p` inherited CLAUDE* env vars and reported the
-  parent's session_id.
-- PLAN.md item 1: init.tools says "Task" but tool_use blocks say "Agent" (allow-list mismatch).
-- PLAN.md item 3 / fixtures/real/subagent-async-two-results.jsonl: an async subagent produced two result
-  events in one process; treating the first result as "run finished" would cut the run short.
-- PLAN.md item 6: read-only Bash commands outside --allowedTools were still auto-approved.
--->
+Log Files: `events.jsonl`, `timing.jsonl`, and `meta.json`, located under `data/runs/run_mvivgp0r_aa2c21/`.
 
-### 2.3 A lesson
+Those were successful cases, but along the way, I noticed that Claude sometimes still gets stuck on small details and wastes tokens trying the same approach repeatedly, even when I tell it that something is still not working.
 
-_[What you would change in prompting, scoping or supervision.]_
+It also seems to get anchored to previous results and treat earlier assumptions as facts, so it takes longer to find the actual bug.
 
-<!--
-Possible material: logs/live-tests.md (test A first failed only because the check assumed the agent would use
-the Read tool; it used grep in Bash instead) — what does that say about specifying/verifying agent behavior?
--->
+Even after I give it a prompt, Claude sometimes misses features that I thought were part of the requirements, such as the ability to view and manage previous run history.3. One thing I would change about Claude Code
 
-## 3. One thing I would change about Claude Code
+I would improve how Claude handles repeated errors.
 
-_[One change to Claude Code itself (not the frontend) and what you observed that motivates it.]_
+For example, when Mads-Lens failed with `spawn claude ENOENT` on Windows, the same error happened six times. Claude kept suggesting fixes like reinstalling Claude or restarting PowerShell, but it didn't inspect `claudeProcess.ts` until after the fifth failure.
 
-<!--
-Possible starting points (your opinion needed): the Task/Agent naming mismatch; multiple result events per
-process with async subagents; thinking blocks without content in stream-json; permission behavior in
-headless mode.
--->
+I think Claude should recognize when the same approach isn't working and try something different. Instead of repeating similar suggestions, it should inspect the relevant code, check the paths, and test its assumptions earlier.
