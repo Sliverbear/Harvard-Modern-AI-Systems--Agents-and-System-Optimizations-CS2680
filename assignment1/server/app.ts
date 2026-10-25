@@ -80,6 +80,23 @@ export function createApp(cfg: Config, mgr: RunManager) {
   }));
   app.post('/api/runs/:id/cancel', wrap((req) => mgr.cancel(req.params.id)));
   app.get('/api/runs/:id/events', wrap((req) => mgr.getLines(req.params.id)));
+  app.get('/api/runs/:id/export.md', wrap((req, res) => {
+    const { filename, markdown } = mgr.exportMarkdown(req.params.id);
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(markdown);
+  }));
+  app.get('/api/runs/:id/report.md', async (req, res, next) => {
+    try {
+      const lang = req.query.lang === 'en' ? 'en' : 'zh';
+      const { filename, markdown } = await mgr.reportMarkdown(req.params.id, lang);
+      res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(markdown);
+    } catch (e) {
+      next(e);
+    }
+  });
 
   app.get('/api/fixtures', wrap(() => mgr.listFixtures()));
   app.post('/api/replay', wrap((req, res) => {

@@ -33,9 +33,34 @@ export function MetricsBar({ run }: { run: RunModel }) {
   );
 }
 
+const HEADER_BTN = 'rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-teal-700 hover:bg-slate-50 dark:border-slate-700 dark:text-teal-400 dark:hover:bg-slate-800';
+
+/** Fetch the generated report and hand it to the browser as a file download. */
+async function downloadReport(runId: string, lang: 'zh' | 'en'): Promise<void> {
+  const r = await fetch(`/api/runs/${runId}/report.md?lang=${lang}`);
+  if (!r.ok) throw new Error(((await r.json().catch(() => ({}))) as { error?: string }).error ?? `HTTP ${r.status}`);
+  const name = /filename="([^"]+)"/.exec(r.headers.get('Content-Disposition') ?? '')?.[1] ?? `report-${runId}.md`;
+  const url = URL.createObjectURL(await r.blob());
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export function RunCard({ run, isLast }: { run: RunModel; isLast: boolean }) {
   const { isOpen, toggle } = useExpand();
   const [showAll, setShowAll] = useState(false);
+  const [report, setReport] = useState<{ busy: 'zh' | 'en' | null; error: string | null }>({ busy: null, error: null });
+  const makeReport = async (lang: 'zh' | 'en') => {
+    setReport({ busy: lang, error: null });
+    try {
+      await downloadReport(run.meta.id, lang);
+      setReport({ busy: null, error: null });
+    } catch (e) {
+      setReport({ busy: null, error: e instanceof Error ? e.message : String(e) });
+    }
+  };
   const k = `run:${run.meta.id}`;
   const open = isOpen(k, isLast || run.meta.status === 'running');
   const meta = run.meta;
@@ -61,7 +86,32 @@ export function RunCard({ run, isLast }: { run: RunModel; isLast: boolean }) {
           <p className={`mt-1 whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300 ${open ? '' : 'line-clamp-1'}`}>{meta.prompt}</p>
           {meta.replaySource && <p className="mt-0.5 text-xs text-violet-700 dark:text-violet-300">source: fixtures/{meta.replaySource}</p>}
         </div>
+        {meta.status !== 'running' && (
+          <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+            <a href={`/api/runs/${meta.id}/export.md`} download data-testid="export-md" title="Download this run (meta, metrics, tool calls, transcript, raw stream) as Markdown" className={HEADER_BTN}>
+              ⬇ Export .md
+            </a>
+            {(['zh', 'en'] as const).map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                disabled={report.busy !== null}
+                onClick={() => makeReport(lang)}
+                data-testid={`report-${lang}`}
+                title="Have Claude Code write a writeup-style report of this run (uses your Claude usage, takes about a minute)"
+                className={`${HEADER_BTN} disabled:cursor-wait disabled:opacity-60`}
+              >
+                {report.busy === lang ? '⏳ Writing report…' : lang === 'zh' ? '📝 Report 中文' : '📝 Report EN'}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
+      {report.error && (
+        <div role="alert" className="mx-4 mb-3 rounded-md border border-rose-300 bg-rose-50 px-3 py-2 text-xs text-rose-900 dark:border-rose-800 dark:bg-rose-950/50 dark:text-rose-100">
+          Report failed: {report.error}
+        </div>
+      )}
 
       {meta.status === 'failed' && meta.error && (
         <div role="alert" data-testid="run-error" className="mx-4 mb-3 rounded-md border border-rose-300 bg-rose-50 px-3 py-2 text-sm text-rose-900 dark:border-rose-800 dark:bg-rose-950/50 dark:text-rose-100">

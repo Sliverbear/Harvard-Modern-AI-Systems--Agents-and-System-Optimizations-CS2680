@@ -82,6 +82,8 @@ The commands are the same in PowerShell. Mads-Lens never uses a shell to start `
 2. **Follow-up.** After a run ends, type another prompt. It resumes the same Claude Code session. Because Claude Code stores sessions per project directory, the directory is locked for the session. Use **New session** to change directory or to start fresh.
 3. **Replay.** Switch the composer to **Replay**, pick a saved `events.jsonl` from `fixtures/`, choose a speed (recorded timing / 10× / instant) and press **▶ Replay**. Replayed runs are labeled **REPLAY** everywhere and make no model calls.
 4. **History.** Every run is saved under `data/`. Use the **History…** menu or reload the page (the URL keeps `#s=<session>`) to bring back earlier sessions, including all tool results.
+5. **Export.** Each finished run has an **⬇ Export .md** button. It downloads one Markdown file with the prompt, run details (model, cwd, exit code, allowed tools, CLI args), metrics, a table of tool calls, the full transcript with every tool input and result, stderr, and the raw `events.jsonl` (`GET /api/runs/<run>/export.md`).
+6. **Report.** **📝 Report 中文** / **📝 Report EN** has Claude Code write a writeup-style report of the run (what I built, how the agent works, a pitfall, a lesson, one change to Claude Code), with the run's facts appended. It runs `claude -p` once with no tools, no MCP servers and no saved session, sends the run export on stdin, and takes about a minute. It uses your Claude usage (about $0.10–0.20 per report with Sonnet) and the model set in `MADS_MODEL` (`GET /api/runs/<run>/report.md?lang=zh|en`).
 
 ### Configuration
 

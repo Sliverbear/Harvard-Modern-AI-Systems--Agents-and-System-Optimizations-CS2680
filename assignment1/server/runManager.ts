@@ -6,7 +6,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { DeleteSessionsResult, RunMeta, ServerMessage, SessionMeta, StreamLine } from '../shared/types.ts';
 import { decideOutcome } from '../shared/outcome.ts';
-import type { Config } from './config.ts';
+import { runToMarkdown } from '../shared/runExport.ts';
+import { applyLine, applyMeta, createRun } from '../shared/trajectory.ts';
+import { ROOT, type Config } from './config.ts';
+import { buildReportPrompt, frontendContext, generateReport, type ReportLang } from './report.ts';
 import { buildArgs, spawnClaude, terminate, validateCwd } from './claudeProcess.ts';
 import { LineBuffer, parseLine } from './lineBuffer.ts';
 import { RunStore, readJsonlWithTiming } from './runStore.ts';
@@ -42,6 +45,7 @@ export class RunManager {
   readonly store: RunStore;
   private sessions = new Map<string, SessionMeta>();
   private active = new Map<string, ActiveRun>(); // runId -> active run
+  private reporting = new Set<string>(); // runIds with a report being generated
   private listeners = new Map<string, Set<Listener>>(); // sessionId -> listeners
   private recentDirs: string[] = [];
 
@@ -113,6 +117,49 @@ export class RunManager {
 
   getLines(runId: string): StreamLine[] {
     return this.store.readLines(runId);
+  }
+
+  /** Markdown export of a run, rebuilt from what is on disk (same normalization as the client). */
+  exportMarkdown(runId: string): { filename: string; markdown: string } {
+    const { run, lines, stamp } = this.loadRun(runId);
+    return { filename: `mads-lens-run-${run.meta.index}-${stamp}.md`, markdown: runToMarkdown(run, lines) };
+  }
+
+  /** Writeup-style report of a finished run, written by Claude Code from the run export. */
+  async reportMarkdown(runId: string, lang: ReportLang): Promise<{ filename: string; markdown: string }> {
+    const { run, lines, stamp } = this.loadRun(runId);
+    if (run.meta.status === 'running') throw new HttpError(409, 'The run is still in progress.');
+    if (this.reporting.has(runId)) throw new HttpError(409, 'A report for this run is already being generated.');
+    this.reporting.add(runId);
+    try {
+      const data = runToMarkdown(run, lines, { raw: false, maxResultChars: 4000 });
+      let readme = '';
+      try {
+        readme = fs.readFileSync(path.join(ROOT, 'README.md'), 'utf8');
+      } catch {
+        /* the report still works without the frontend description */
+      }
+      const r = await generateReport(this.cfg, buildReportPrompt(data, frontendContext(readme), lang));
+      const facts = data.split('\n## Transcript')[0].replace(/^# .*\n+/, '');
+      const footer = `---\n\n_Report written by Claude Code (${r.model ?? 'default model'}, ${r.costUsd === null ? 'cost —' : `$${r.costUsd.toFixed(4)}`}) from Mads-Lens run \`${runId}\` on ${new Date().toISOString()}._`;
+      return {
+        filename: `mads-lens-report-run-${run.meta.index}-${stamp}-${lang}.md`,
+        markdown: `${r.text}\n\n---\n\n# Appendix: run data\n\n${facts.trim()}\n\n${footer}\n`,
+      };
+    } finally {
+      this.reporting.delete(runId);
+    }
+  }
+
+  private loadRun(runId: string) {
+    const meta = this.active.get(runId)?.meta ?? this.store.readRunMeta(runId);
+    if (!meta) throw new HttpError(404, `Unknown run: ${runId}`);
+    const lines = this.store.readLines(runId);
+    const run = createRun(meta);
+    for (const l of lines) applyLine(run, l);
+    applyMeta(run, meta);
+    run.stderr = this.store.readStderr(runId);
+    return { run, lines, stamp: meta.startedAt.slice(0, 19).replace(/[:T]/g, '-') };
   }
 
   // ---------- subscriptions ----------
